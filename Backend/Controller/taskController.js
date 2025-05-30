@@ -35,9 +35,7 @@ const suggestTasks = async (req, res) => {
     });
 
     const raw = completion.choices[0].message.content;
-    const suggestions = cleanSuggestions(raw); // ✅ use your utility here
-
-    console.log('suggestions', suggestions);
+    const suggestions = cleanSuggestions(raw); 
 
     res.json({ suggestions });
   } catch (err) {

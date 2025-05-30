@@ -1,5 +1,6 @@
-// models/Task.js
+
 const mongoose = require('mongoose');
+
 
 const taskSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -15,8 +16,12 @@ const taskSchema = new mongoose.Schema({
     default: []
   },
   dueDate: { type: Date },
-  attachment: { type: String }, // file URL or path
-
+  attachment: { type: String },
 }, { timestamps: true });
+
+taskSchema.index({ userId: 1 });
+taskSchema.index({ userId: 1, status: 1 });
+taskSchema.index({ userId: 1, priorityId: 1 }); 
+taskSchema.index({ title: 'text' }); 
 
 module.exports = mongoose.model('Task', taskSchema);

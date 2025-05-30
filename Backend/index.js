@@ -5,7 +5,7 @@ const connectDB = require('./config/db');
 const app = express();
 const Router = require('./Router/routes')
 const cookieParser = require('cookie-parser');
-
+const rateLimitMiddleware = require('./Middleware/rateLimitMiddleware');
 
 dotenv.config();
 
@@ -21,8 +21,8 @@ app.use(cors({
   }));
 
 
-// app.use(cors());
 
+app.use(rateLimitMiddleware);
 app.use('/', Router);
 
 connectDB();
