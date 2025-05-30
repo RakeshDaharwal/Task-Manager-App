@@ -7,7 +7,7 @@ import { UploadFile } from '@mui/icons-material';
 import axiosInstance from '../../utils/axiosInstance';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
-
+import usePriorities from '../../hooks/usePriorities';
 
 const CreateTask = () => {
   const [formData, setFormData] = useState({
@@ -18,31 +18,14 @@ const CreateTask = () => {
     attachment: null,
   });
   const [customTask, setCustomTask] = useState('');
-  const [priorities, setPriorities] = useState([]);
+
   const [suggestedTasks, setSuggestedTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [buttonLoading, setButtonLoading] = useState(false);
 
   const navigate = useNavigate();
+ const priorities = usePriorities();
 
-
-  // Fetch priorities on mount
-  useEffect(() => {
-    const fetchPriorities = async () => {
-      try {
-        const res = await axiosInstance.get('/priorities');
-        setPriorities(res.data.priorities || []);
-      } catch (err) {
-        console.error('Failed to load priorities:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Failed to load priorities',
-          text: err.response?.data?.error || 'Something went wrong',
-        });
-      }
-    };
-    fetchPriorities();
-  }, []);
 
   const handleAddSubTask = () => {
     if (customTask.trim()) {

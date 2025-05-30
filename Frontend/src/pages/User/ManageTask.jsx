@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import usePriorities from '../../hooks/usePriorities';
 import Swal from 'sweetalert2';
 import axiosInstance from '../../utils/axiosInstance'; // adjust this import to your axios setup
 import { format } from 'date-fns';
@@ -31,7 +31,6 @@ const priorityColor = {
 const ManageTask = () => {
   const [tasks, setTasks] = useState([]);
 
-  const [priorities, setPriorities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     status: '',
@@ -41,22 +40,9 @@ const ManageTask = () => {
 
 
   const navigate = useNavigate();
+ const priorities = usePriorities();
 
-
-  const fetchPriorities = async () => {
-    try {
-      const res = await axiosInstance.get('/priorities');
-      setPriorities(res.data.priorities || []);
-    } catch (err) {
-      console.error('Failed to load priorities:', err);
-      Swal.fire({
-        icon: 'error',
-        title: 'Failed to load priorities',
-        text: err.response?.data?.error || 'Something went wrong',
-      });
-    }
-  };
-
+ 
   const fetchTasks = async () => {
     try {
       setLoading(true); // start loading
@@ -84,16 +70,9 @@ const ManageTask = () => {
   };
 
 
-
-
-  useEffect(() => {
-    fetchPriorities();
-  }, []);
-
   useEffect(() => {
     fetchTasks();
   }, [formData]);
-
 
 
   const handleSearchChange = _.debounce((value) => {
