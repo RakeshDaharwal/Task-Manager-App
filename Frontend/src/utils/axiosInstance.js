@@ -10,74 +10,98 @@ const axiosInstance = axios.create({
   },
 });
 
-// Attach access token
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+ 
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
     }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+  });
 
+  failedQueue = [];
+};
 
-// Handle expired access token and refresh it
 axiosInstance.interceptors.response.use(
   (response) => {
-   
     if (response.status === 201) {
       Swal.fire({
         icon: 'success',
         title: 'Success',
         text: response.data?.message || 'Created successfully',
-        timer: 2000,
+        timer: 1000,
         showConfirmButton: false,
       });
     }
 
     return response;
   },
-
   async (error) => {
     const originalRequest = error.config;
-    const status = error.response?.status;
 
-    // If token expired and not already retrying
-    if (status === 401 && !originalRequest._retry) {
+    // Check for token expiration
+    if (error.response?.status === 401 && !originalRequest._retry) {
+     
+      if (isRefreshing) {
+      
+        return new Promise(function (resolve, reject) {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+           
+            originalRequest.headers['Authorization'] = 'Bearer ' + token;
+            return axiosInstance(originalRequest);
+          })
+          .catch((err) => {
+            console.error('[401 Handler] Retry from queue failed:', err.message);
+            return Promise.reject(err);
+          });
+      }
+
       originalRequest._retry = true;
+      isRefreshing = true;
 
       try {
+        console.log('[Token Refresh] Requesting new access token...');
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/refresh-token`, {
           withCredentials: true,
         });
 
         const newToken = res.data.accessToken;
-
        
 
-        // Update token in localStorage and retry original request
         localStorage.setItem('accessToken', newToken);
-        axiosInstance.defaults.headers.Authorization = `Bearer ${newToken}`;
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        axiosInstance.defaults.headers['Authorization'] = 'Bearer ' + newToken;
+        originalRequest.headers['Authorization'] = 'Bearer ' + newToken;
+
+        processQueue(null, newToken);
 
         return axiosInstance(originalRequest);
-      } catch (refreshError) {
-        // If refresh token also expired or invalid
+      } catch (err) {
+        console.error('[Token Refresh] Failed:', err.message);
+        processQueue(err, null);
+        localStorage.removeItem('accessToken');
+
         Swal.fire({
           icon: 'error',
           title: 'Session Expired',
           text: 'Please login again.',
         });
 
-        localStorage.removeItem('accessToken');
         window.location.href = '/auth/signin';
-        return Promise.reject(refreshError);
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
       }
     }
 
-    // Generic error handler
+    // Generic error
+    console.error('[Generic Error Handler]', error.response?.data || error.message);
     Swal.fire({
       icon: 'error',
       title: 'Error',
@@ -90,5 +114,7 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+
 
 export default axiosInstance;

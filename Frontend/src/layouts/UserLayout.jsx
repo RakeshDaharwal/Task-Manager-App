@@ -13,8 +13,8 @@ import {
   createTheme,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
+import NightlightRoundIcon from '@mui/icons-material/NightlightRound'; // 🌙 Dark mode
+import WbSunnyIcon from '@mui/icons-material/WbSunny'; // ☀️ Light mode
 import Sidebar from '../components/User/Sidebar';
 import { Outlet } from 'react-router-dom';
 
@@ -22,7 +22,11 @@ const drawerWidth = 240;
 
 const UserLayout = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+
+  const [darkMode, setDarkMode] = useState(() => {
+  const savedMode = localStorage.getItem('darkMode');
+  return savedMode === 'true';
+});
 
   // Create MUI theme with dark/light mode support
   const theme = useMemo(
@@ -42,9 +46,11 @@ const UserLayout = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleDarkModeToggle = () => {
-    setDarkMode(!darkMode);
-  };
+const handleDarkModeToggle = () => {
+  const newMode = !darkMode;
+  setDarkMode(newMode);
+  localStorage.setItem('darkMode', newMode.toString());
+};
 
   return (
     <ThemeProvider theme={theme}>
@@ -79,7 +85,7 @@ const UserLayout = () => {
 
             {/* Dark Mode Toggle */}
             <IconButton color="inherit" onClick={handleDarkModeToggle}>
-              {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+              {darkMode ? <NightlightRoundIcon /> : <WbSunnyIcon/>}
             </IconButton>
           </Toolbar>
         </AppBar>

@@ -11,6 +11,9 @@ const taskUpload = require('../Middleware/imageMiddleware')
 Router.post('/sign-up', signUp)
 Router.post('/sign-in', signIn)
 Router.get('/users/profile', authMiddleware, getUserData);
+Router.get('/refresh-token', refreshAccessToken);
+
+
 
 // TASK
 
