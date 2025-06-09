@@ -55,6 +55,7 @@ axiosInstance.interceptors.response.use(
           .then((token) => {
            
             originalRequest.headers['Authorization'] = 'Bearer ' + token;
+          
             return axiosInstance(originalRequest);
           })
           .catch((err) => {

@@ -191,7 +191,7 @@ export default function SignUp() {
                   <Typography variant="h5" align="center" gutterBottom>
                     Sign Up
                   </Typography>
-                  <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+                  <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2, p:2 , minHeight:'350px'}}>
                     <TextField
                       fullWidth
                       size="small"
@@ -234,12 +234,13 @@ export default function SignUp() {
                       helperText={
                         errors.password
                           ? 'Password must be at least 6 characters and include a special character'
-                          : ''
+                          : ' '
                       }
                       margin="dense"
                       variant="standard"
                       required
                       InputLabelProps={{ required: true }}
+                       FormHelperTextProps={{ style: { height: 24, marginTop: 4, marginBottom: 2 } }}
                     />
 
 
