@@ -25,3 +25,5 @@ taskSchema.index({ userId: 1, priorityId: 1 });
 taskSchema.index({ title: 'text' }); 
 
 module.exports = mongoose.model('Task', taskSchema);
+
+

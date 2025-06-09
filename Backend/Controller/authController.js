@@ -86,8 +86,8 @@ const signIn = async (req, res) => {
     // Set refresh token in HTTP-only cookie
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: false, // make false for local development if not using HTTPS
-      sameSite: 'Strict',
+      // secure: false,
+      // sameSite: 'None',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -128,6 +128,8 @@ const refreshAccessToken = (req, res) => {
     return res.status(401).json({ message: 'Invalid or expired refresh token' });
   }
 };
+
+
 
 const getUserData = async (req, res) => {
   try {

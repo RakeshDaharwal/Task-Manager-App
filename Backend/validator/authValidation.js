@@ -3,7 +3,7 @@ const Joi = require('joi');
 const signUpValidation = Joi.object({
   name: Joi.string()
     .trim()
-    .replace(/\s+/g, ' ') // replace multiple spaces with single space
+    .replace(/\s+/g, ' ') 
     .min(2)
     .max(50)
     .required()
@@ -14,7 +14,7 @@ const signUpValidation = Joi.object({
 
   email: Joi.string()
     .trim()
-    .replace(/\s+/g, '') // remove all internal spaces
+    .replace(/\s+/g, '') 
     .email()
     .required()
     .messages({
@@ -24,7 +24,7 @@ const signUpValidation = Joi.object({
 
   password: Joi.string()
     .trim()
-    .replace(/\s+/g, '') // remove all internal spaces
+    .replace(/\s+/g, '') 
     .min(6)
     .pattern(/^(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/)
     .required()
@@ -64,3 +64,5 @@ module.exports = {
   signUpValidation,
   signInValidation
 };
+
+
